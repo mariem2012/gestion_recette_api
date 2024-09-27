@@ -43,14 +43,29 @@ class RecipeModel {
     }
   }
 
+  // static async getAllRecipes() {
+  //   try {
+  //     const [results] = await db.query('SELECT * FROM recipes');
+  //     return results;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
   static async getAllRecipes() {
     try {
-      const [results] = await db.query('SELECT * FROM recipes');
-      return results;
+        const [results] = await db.query(`
+            SELECT recipes.*, categories.name AS category_name 
+            FROM recipes 
+            LEFT JOIN categories ON recipes.category_id = categories.id
+        `);
+        return results;
     } catch (error) {
-      throw error;
+        throw error;
     }
-  }
+}
+
+
   static async createRecipes(title, ingredients, type, category_id) {
     try {
       const [result] = await db.query(

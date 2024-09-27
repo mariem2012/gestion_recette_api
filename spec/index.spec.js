@@ -4,11 +4,12 @@ describe('Recipe tests', () => {
   let recipeId = null;
 
   it('can be create', async () => {
-    const recipe = { title: 'crepe', type: 'dessert', ingredient: 'farime' };
+    const recipe = { title: 'crepen', type: 'desert', ingredients: 'farime', category_id: 1 };
     const result = await RecipeModel.createRecipes(
       recipe.title,
       recipe.type,
-      recipe.ingredient
+      recipe.ingredients,
+      recipe.category_id
     );
     recipeId = result.insertId;
     const recipeCreated = await RecipeModel.getRecipeById(recipeId);
@@ -51,26 +52,30 @@ describe('Recipe tests', () => {
     expect(recipe).toEqual([]);
   });
 
-  it('Can update recipes', async () => {
+  it('Can update recipes', async () => { 
     const recipe = {
       id: 5,
-      title: 'crenpe',
+      title: 'macaroni',
+      ingredients: 'epice',
       type: 'dessert',
-      ingredient: 'farime',
+      category_id: 1
     };
     await RecipeModel.updateRecipes(
       recipe.id,
       recipe.title,
-      recipe.ingredient,
-      recipe.type
+      recipe.ingredients,
+      recipe.type,
+      recipe.category_id
     );
-    // expect(updateRecipe).not.toBe(0);
-
+  
     const updatedRecipe = await RecipeModel.getRecipeById(recipe.id);
+    
     expect(updatedRecipe[0].title).toBe(recipe.title);
-    expect(updatedRecipe[0].ingredient).toBe(recipe.ingredient);
+    expect(updatedRecipe[0].ingredients).toBe(recipe.ingredients); 
     expect(updatedRecipe[0].type).toBe(recipe.type);
+    expect(updatedRecipe[0].category_id).toBe(recipe.category_id); 
   });
+  
 
   it('Can not update recipes', async () => {
     const recipe = {
@@ -86,5 +91,80 @@ describe('Recipe tests', () => {
       recipe.type
     );
     expect(updateRecipe).toBe(0);
+  });
+});
+import CategoryModel from '../models/CategoryModel.js';
+
+describe('Category tests', () => {
+  let categoryId = null;
+
+  it('can create category', async () => {
+    const category = { name: `justtest-${Date.now()}` };
+    const result = await CategoryModel.createCategories(category.name);
+    categoryId = result.insertId;
+    const categoryCreated = await CategoryModel.getCategoryById(categoryId);
+    expect(categoryId).not.toBeNull();
+    expect(categoryCreated).not.toBeNull();
+  });
+
+  it('can not create category', async () => {
+    try {
+      const category = {name: null};
+      const result = await CategoryModel.createCategories(
+        category.name
+      );
+      categoryId = result.insertId;
+      const categoryCreated = await CategoryModel.getCategoryById(categoryId);
+      expect(categoryId).toBeNull();
+      expect(categoryCreated).toEqual([]);
+    } catch (error) {}
+  });
+
+  it('Can get all categories', async () => {
+    const getAll = await CategoryModel.getAllCategories();
+    expect(getAll).not.toBeNull();
+  });
+
+  it('Can delete category', async () => {
+    let id = 3;
+    await CategoryModel.deleteCategories(id);
+    const category = await CategoryModel.getCategoryById(id);
+    expect(category).toEqual([]);
+  });
+
+  it('Can not delete category', async () => {
+    let id = 70;
+    const deleteRecipe = await CategoryModel.deleteCategories(id);
+    expect(deleteRecipe).toBe(0);
+    const category = await CategoryModel.getCategoryById(id);
+    expect(category).toEqual([]);
+  });
+
+  it('Can update category', async () => { 
+    const category = {
+      id: 1,
+      name: 'omelette'
+    };
+    await CategoryModel.updateCategories(
+      category.id,
+      category.name
+    );
+  
+    const updatedCategory = await CategoryModel.getCategoryById(category.id);
+  
+    expect(updatedCategory[0].name).toBe(category.name);
+  });
+  
+
+  it('Can not update category', async () => {
+    const category = {
+      id: 5000,
+      name: 'crenpe'
+    };
+    const updateCategory = await CategoryModel.updateCategories(
+      category.id,
+      category.name
+    );
+    expect(updateCategory).toBe(0);
   });
 });

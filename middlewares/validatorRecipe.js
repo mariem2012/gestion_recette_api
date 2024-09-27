@@ -12,8 +12,8 @@ const addRequestValidatore = [
     .isString()
     .withMessage("Title can't be number!")
     .bail()
-    .isLength({ min: 6 })
-    .withMessage('Title must be at least 6 characters long!')
+    .isLength({ min: 3 })
+    .withMessage('Title must be at least 3 characters long!')
     .bail()
     .custom(async (value) => {
       const result = await RecipeModel.checkRecipes(value);
@@ -27,8 +27,8 @@ const addRequestValidatore = [
     .isEmpty()
     .withMessage('Ingredient is required!')
     .bail()
-    .isLength({ min: 6 })
-    .withMessage('Ingredient must be at least 6 characters long!')
+    .isLength({ min: 3 })
+    .withMessage('Ingredient must be at least 3 characters long!')
     .bail()
     .isString()
     .withMessage("Ingredient can't be number!")
@@ -102,13 +102,13 @@ const updateRequestValidatore = [
     .isString()
     .withMessage("Title can't be number!")
     .bail()
-    .isLength({ min: 6 })
-    .withMessage('Title must be at least 6 characters long!')
+    .isLength({ min: 3 })
+    .withMessage('Title must be at least 3 characters long!')
     .bail()
-    .custom(async (value) => {
+    .custom(async (value, { req }) => {
       const result = await RecipeModel.checkRecipes(value);
-      if (result !== 0) {
-        throw new Error('This recipe is already exist!');
+      if (result !== 0 && value !== req.body.originalTitle) {
+        throw new Error('This recipe title is already exist!');
       }
       return true;
     }),
@@ -117,8 +117,8 @@ const updateRequestValidatore = [
     .isEmpty()
     .withMessage('Ingredient is required!')
     .bail()
-    .isLength({ min: 6 })
-    .withMessage('Ingredient must be at least 6 characters long!')
+    .isLength({ min: 3 })
+    .withMessage('Ingredient must be at least 3 characters long!')
     .bail()
     .isString()
     .withMessage("Ingredient can't be number!")
