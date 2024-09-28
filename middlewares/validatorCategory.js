@@ -59,9 +59,9 @@ const updateRequestCategoryValidatore = [
     .isLength({ min: 3 })
     .withMessage('name must be at least 3 characters long!')
     .bail()
-    .custom(async (value) => {
+    .custom(async (value, { req }) => {
       const result = await CategoryModel.checkCategory(value);
-      if (result !== 0) {
+      if (result !== 0 && value !== req.body.originalName) {
         throw new Error('This category is already exist!');
       }
       return true;
